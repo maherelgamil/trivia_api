@@ -42,41 +42,28 @@ class TriviaTestCase(unittest.TestCase):
     """
     test get questions by category_id
     """
-    def test_get_questions_by_category(self):
-        respose = self.client().get('categories/1/questions?page=1')
-        questions = json.loads(respose.data)
+    def test_get_questions_list(self):
+        response = self.client().get('questions?page=1')
+        questions = json.loads(response.data)
 
-        self.assertEqual(respose.status_code, 200)
-        self.assertEqual(questions['current_category']['id'], 1)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(len(questions['questions']), questions['total_questions'])
 
     """
-    test get 404 when get questions by none exist category
+    test get question by invalid page
     """
-    def test_get_questions_by_not_exist_category(self):
-        respose = self.client().get('categories/1000/questions?page=1')
+    def test_get_question_by_invalid_page(self):
+        response = self.client().get('questions?page=0')
 
-        self.assertEqual(respose.status_code, 404)
-    """
-    test get question by category and none invalid page
-    """
-    def test_get_question_by_category_and_invalid_page(self):
-        respose = self.client().get('categories/1/questions?page=0')
-        questions = json.loads(respose.data)
+        self.assertEqual(response.status_code, 422)
 
-        self.assertEqual(respose.status_code, 422)
+    def test_get_question_by_below_zero_page(self):
+        response = self.client().get('questions?page=-1')
+        self.assertEqual(response.status_code, 422)
 
-    def test_get_question_by_category_and_below_zer0_page(self):
-        respose = self.client().get('categories/1/questions?page=-1')
-        questions = json.loads(respose.data)
-
-        self.assertEqual(respose.status_code, 422)
-
-    def test_get_question_by_category_and_none_exist_page(self):
-        respose = self.client().get('categories/1/questions?page=10')
-        questions = json.loads(respose.data)
-
-        self.assertEqual(respose.status_code, 422)
+    def test_get_question_by_none_exist_page(self):
+        response = self.client().get('questions?page=10')
+        self.assertEqual(response.status_code, 422)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
