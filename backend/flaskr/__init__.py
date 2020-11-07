@@ -30,7 +30,7 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests
   for all available categories.
   '''
-  @app.route('/categoriess', methods=['GET'])
+  @app.route('/categories', methods=['GET'])
   def get_categories():
       categories = [category.format() for category in Category.query.all()]
 
@@ -110,6 +110,21 @@ def create_app(test_config=None):
   Create error handlers for all expected errors
   including 404 and 422.
   '''
+  @app.errorhandler(404)
+  def notFound(error):
+      return jsonify({
+          "success": False,
+          "error": 404,
+          "message": 'Entity Not Found'
+      }), 404
+
+  @app.errorhandler(422)
+  def validationError(error):
+      return jsonify({
+          "success": False,
+          "error": 422,
+          "message": "Validation Error"
+      }), 422
 
   return app
 
