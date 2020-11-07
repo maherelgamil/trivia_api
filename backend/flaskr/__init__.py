@@ -87,7 +87,6 @@ def create_app(test_config=None):
       })
 
   '''
-  @TODO:
   Create an endpoint to DELETE question using a question ID.
 
   TEST: When you click the trash icon next to a question, the question will be removed.
