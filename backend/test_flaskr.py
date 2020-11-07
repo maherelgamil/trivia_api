@@ -77,16 +77,16 @@ class TriviaTestCase(unittest.TestCase):
 
         question_id = question.id
 
-        response = self.client().delete('/questions?id={}'.format(question_id))
+        response = self.client().delete('/questions/{}'.format(question_id))
         response_data = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data['id'], question_id)
 
-    def test_delete_question_with_422_error(self):
-        response = self.client().delete('/questions')
+    def test_delete_question_with_invalid_id(self):
+        response = self.client().delete('/questions/1000')
 
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 404)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
