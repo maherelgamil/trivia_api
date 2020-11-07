@@ -88,6 +88,34 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    """
+    test insert new question
+    """
+    def test_create_new_question(self):
+        question = {
+            "question":"Test Question",
+            "answer":"Test Answer",
+            "category":1,
+            "difficulty":3
+        }
+
+        response = self.client().post('/questions', json=question.copy())
+        response_data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['question']['question'], question.get('question'))
+        self.assertEqual(response_data['question']['answer'], question.get('answer'))
+        self.assertEqual(response_data['question']['difficulty'], question.get('difficulty'))
+
+    def test_create_new_question_validation(self):
+        question = {
+            "question":"Test Question",
+        }
+
+        response = self.client().post('/questions', json=question.copy())
+
+        self.assertEqual(response.status_code, 422)
+
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

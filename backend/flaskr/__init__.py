@@ -63,14 +63,14 @@ def create_app(test_config=None):
       if page <= 0:
           return abort(422)
 
-      start = (page - 1) * 10
-      end = start + 10
+      start = (page - 1) * QUESTIONS_PER_PAGE
+      end = start + QUESTIONS_PER_PAGE
 
       questions = [question.format() for question in questions]
       questions = questions[start:end]
 
       if len(questions) == 0:
-          abort(422)
+          return abort(422)
 
       # get all categories
       categories = Category.query.all()
@@ -101,7 +101,7 @@ def create_app(test_config=None):
 
       # if question not exist
       if question == None:
-          abort(404)
+          return abort(404)
 
       try:
         question.delete()
@@ -112,7 +112,7 @@ def create_app(test_config=None):
         }), 200
 
       except:
-          abort(500)
+        return abort(500)
 
   '''
   @TODO:
@@ -124,6 +124,41 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.
   '''
+  @app.route('/questions', methods=['POST'])
+  def create_post():
+
+      question_data = request.get_json()
+
+      # Validation
+      if 'question' not in question_data.keys() or \
+          question_data['question'] == None or \
+          question_data['question'] == '' or \
+          'answer' not in question_data.keys() or \
+          question_data['answer'] == None or \
+          question_data['answer'] == '' or \
+          'difficulty' not in question_data.keys() or \
+          question_data['difficulty'] == None or \
+          question_data['difficulty'] == '' or \
+          'category' not in question_data.keys() or \
+          question_data['category'] == None or \
+          question_data['category'] == '':
+
+          return abort(422)
+
+
+      question = Question(
+          question=question_data['question'],
+          answer=question_data['answer'],
+          difficulty=question_data['difficulty'],
+          category=question_data['category'],
+      )
+      question.insert()
+
+      return jsonify({
+          "success": True,
+          "message": "Question Created Successfully",
+          'question': question.format()
+      }), 200
 
   '''
   @TODO:
