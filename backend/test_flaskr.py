@@ -40,10 +40,10 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(categories['success'], True)
 
     """
-    test get questions by category_id
+    test get questions
     """
     def test_get_questions_list(self):
-        response = self.client().get('questions?page=1')
+        response = self.client().get('/questions?page=1')
         questions = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
@@ -53,16 +53,39 @@ class TriviaTestCase(unittest.TestCase):
     test get question by invalid page
     """
     def test_get_question_by_invalid_page(self):
-        response = self.client().get('questions?page=0')
+        response = self.client().get('/questions?page=0')
 
         self.assertEqual(response.status_code, 422)
 
     def test_get_question_by_below_zero_page(self):
-        response = self.client().get('questions?page=-1')
+        response = self.client().get('/questions?page=-1')
         self.assertEqual(response.status_code, 422)
 
     def test_get_question_by_none_exist_page(self):
-        response = self.client().get('questions?page=10')
+        response = self.client().get('/questions?page=10')
+        self.assertEqual(response.status_code, 422)
+
+    def test_delete_question(self):
+        # create new question
+        question = Question(
+            question="Test Question",
+            answer="Test Answer",
+            category=1,
+            difficulty=3
+        )
+        question.insert()
+
+        question_id = question.id
+
+        response = self.client().delete('/questions?id={}'.format(question_id))
+        response_data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['id'], question_id)
+
+    def test_delete_question_with_422_error(self):
+        response = self.client().delete('/questions')
+
         self.assertEqual(response.status_code, 422)
 
 # Make the tests conveniently executable

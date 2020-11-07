@@ -94,6 +94,30 @@ def create_app(test_config=None):
   This removal will persist in the database and when you refresh the page.
   '''
 
+  @app.route('/questions', methods=['DELETE'])
+  def delete_question():
+      question_id = request.args.get('id', None, type=int)
+
+      # validation
+      if question_id == None:
+          abort(422)
+
+      # first we need to get the question record
+      question = Question.query.filter(Question.id == question_id).one_or_none()
+
+      # if question not exist
+      if question == None:
+          abort(404)
+
+      try:
+        question.delete()
+
+        return jsonify({
+            "success": True,
+            "id": question_id
+        }), 200
+      except:
+          abort(500)
   '''
   @TODO:
   Create an endpoint to POST a new question,
@@ -144,7 +168,7 @@ def create_app(test_config=None):
   including 404 and 422.
   '''
   @app.errorhandler(404)
-  def notFound(error):
+  def not_found(error):
       return jsonify({
           "success": False,
           "error": 404,
@@ -152,12 +176,21 @@ def create_app(test_config=None):
       }), 404
 
   @app.errorhandler(422)
-  def validationError(error):
+  def validation_error(error):
       return jsonify({
           "success": False,
           "error": 422,
           "message": "Validation Error"
       }), 422
 
+  @app.errorhandler(500)
+  def internal_server_error(error):
+      return jsonify({
+          "success": False,
+          "error": 500,
+          "message": "Internal Server Error"
+      }), 500
+
+  # Let's run our app
   return app
 
