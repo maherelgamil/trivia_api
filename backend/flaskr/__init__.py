@@ -128,36 +128,72 @@ def create_app(test_config=None):
 
       question_data = request.get_json()
 
-      # Validation
-      if 'question' not in question_data.keys() or \
-          question_data.get('question') == None or \
-          question_data.get('question') == '' or \
-          'answer' not in question_data.keys() or \
-          question_data.get('answer') == None or \
-          question_data.get('answer') == '' or \
-          'difficulty' not in question_data.keys() or \
-          question_data.get('difficulty') == None or \
-          question_data.get('difficulty') == '' or \
-          'category' not in question_data.keys() or \
-          question_data.get('category') == None or \
-          question_data.get('category') == '':
+      if question_data.get('searchTerm'):
+          query = question_data.get('searchTerm')
 
-          return abort(422)
+          # get questions by search term
+          questions = Question.query.filter(
+              Question.question.ilike(f'%{query}%')
+          ).all()
 
+          # pagination
+          page = request.args.get('page', 1, type=int)
 
-      question = Question(
-          question=question_data.get('question'),
-          answer=question_data.get('answer'),
-          difficulty=question_data.get('difficulty'),
-          category=question_data.get('category'),
-      )
-      question.insert()
+          # page parameter validation
+          if page <= 0:
+              return abort(422)
 
-      return jsonify({
-          "success": True,
-          "message": "Question Created Successfully",
-          'question': question.format()
-      }), 200
+          start = (page - 1) * QUESTIONS_PER_PAGE
+          end = start + QUESTIONS_PER_PAGE
+
+          questions = [question.format() for question in questions]
+          questions = questions[start:end]
+
+          if len(questions) == 0:
+              return abort(422)
+
+          # get all categories
+          categories = Category.query.all()
+          categories_formatted = {}
+          for category in categories:
+              categories_formatted[category.id] = category.type
+
+          return jsonify({
+              'success': True,
+              'questions': questions,
+              'total_questions': len(questions),
+              'current_category': None,
+              'categories': categories_formatted
+          })
+      else:
+          # Validation
+          if 'question' not in question_data.keys() or \
+              question_data.get('question') == None or \
+              question_data.get('question') == '' or \
+              'answer' not in question_data.keys() or \
+              question_data.get('answer') == None or \
+              question_data.get('answer') == '' or \
+              'difficulty' not in question_data.keys() or \
+              question_data.get('difficulty') == None or \
+              question_data.get('difficulty') == '' or \
+              'category' not in question_data.keys() or \
+              question_data.get('category') == None or \
+              question_data.get('category') == '':
+              return abort(422)
+
+          question = Question(
+              question=question_data.get('question'),
+              answer=question_data.get('answer'),
+              difficulty=question_data.get('difficulty'),
+              category=question_data.get('category'),
+          )
+          question.insert()
+
+          return jsonify({
+              "success": True,
+              "message": "Question Created Successfully",
+              'question': question.format()
+          }), 200
 
   '''
   Create a POST endpoint to get questions based on a search term.
