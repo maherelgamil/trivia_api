@@ -66,27 +66,195 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+## Endpoints
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+### Base URL
+`127.0.01:5000`
 
-GET '/categories'
+### Get Categories List
+
+`GET '/categories'`
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+```json
+{
+    categories: {
+        1: "Science",
+        2: "Art",
+        3: "Geography",
+        4: "History",
+        5: "Entertainment",
+        6: "Sports"
+    },
+    success: true,
+    total_categories: 6
+}
+```
 
+### Get Questions List
+
+`GET '/questions'`
+- Fetches a dictionary of questions in which the keys are the ids and the value is the corresponding string of the questions
+- Request Arguments: page
+- Returns: An object with a keys, categories, that contains a object of id: category_string key:value pairs ,questions, current_category and total_questions . 
+```json
+{
+    categories: {
+        1: "Science",
+        2: "Art",
+        3: "Geography",
+        4: "History",
+        5: "Entertainment",
+        6: "Sports"
+    },
+    current_category: null,
+    questions: [
+        {
+            answer: "Muhammad Ali",
+            category: 4,
+            difficulty: 1,
+            id: 9,
+            question: "What boxer's original name is Cassius Clay?"
+        },
+        {
+            answer: "Apollo 13",
+            category: 5,
+            difficulty: 4,
+            id: 2,
+            question: "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        ...
+    ],
+    success: true,
+    total_questions: 10
+}
+```
+
+### Delete Questions
+
+`DELETE '/questions<int:id>'`
+- delete question by question id
+- Request Arguments: id
+- Returns: An object with success or failed response and question id
+```json
+{
+    success: true,
+    id: 2
+}
+```
+
+### Create Question
+
+`POST '/questions'`
+- create new question
+- Request Arguments: question, answer, category, difficulty
+- Returns: An object with success or failed response and question id
+```json
+{
+    success: true,
+    "message": "Question Created Successfully",
+    question: {
+      "id": 11,
+      "question": "How are you?",
+      ...
+    } 
+}
+```
+
+### Search Question
+
+`POST '/questions'`
+- create new question
+- Request Arguments: searchTerm, page
+- Returns: An object of question list
+```json
+{
+    categories: {
+        1: "Science",
+        2: "Art",
+        3: "Geography",
+        4: "History",
+        5: "Entertainment",
+        6: "Sports"
+    },
+    current_category: null,
+    questions: [
+        {
+            answer: "Muhammad Ali",
+            category: 4,
+            difficulty: 1,
+            id: 9,
+            question: "What boxer's original name is Cassius Clay?"
+        },
+        {
+            answer: "Apollo 13",
+            category: 5,
+            difficulty: 4,
+            id: 2,
+            question: "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        ...
+    ],
+    success: true,
+    total_questions: 10
+}
+```
+
+### Get Questions List by category id
+
+`GET '/categories/<int:category_id>/questions'`
+- Fetches a dictionary of questions in which the keys are the ids and the value is the corresponding string of the questions by category id
+- Request Arguments: category_id, page
+- Returns: An object with a keys, categories, that contains a object of id: category_string key:value pairs ,questions, current_category and total_questions . 
+```json
+{
+    categories: {
+        1: "Science",
+        2: "Art",
+        3: "Geography",
+        4: "History",
+        5: "Entertainment",
+        6: "Sports"
+    },
+    current_category: null,
+    questions: [
+        {
+            answer: "Muhammad Ali",
+            category: 4,
+            difficulty: 1,
+            id: 9,
+            question: "What boxer's original name is Cassius Clay?"
+        },
+        {
+            answer: "Apollo 13",
+            category: 5,
+            difficulty: 4,
+            id: 2,
+            question: "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        ...
+    ],
+    success: true,
+    total_questions: 10
+}
+```
+
+### Play Quizzes
+
+`POST '/quizzes'`
+- get random quizzes
+- Request Arguments: previous_questions, quiz_category
+- Returns: An object with success or failed response and question object
+```json
+{
+    success: true,
+    question: {
+      "id": 11,
+      "question": "How are you?",
+      ...
+    } 
+}
 ```
 
 
