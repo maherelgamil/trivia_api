@@ -8,6 +8,15 @@ from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
 
+
+def get_formatted_categories():
+    categories = Category.query.all()
+    categories_formatted = {}
+    for category in categories:
+        categories_formatted[category.id] = category.type
+
+    return categories_formatted
+
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -32,7 +41,7 @@ def create_app(test_config=None):
   '''
   @app.route('/categories', methods=['GET'])
   def get_categories():
-      categories = [category.format() for category in Category.query.all()]
+      categories = get_formatted_categories()
 
       return jsonify({
           "success": True,
@@ -53,7 +62,7 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['GET'])
   def get_questions_by_category_id():
-      # get questions
+      # Get questions
       questions = Question.query.all()
 
       # pagination
@@ -72,18 +81,12 @@ def create_app(test_config=None):
       if len(questions) == 0:
           return abort(422)
 
-      # get all categories
-      categories = Category.query.all()
-      categories_formatted = {}
-      for category in categories:
-          categories_formatted[category.id] = category.type
-
       return jsonify({
           'success': True,
           'questions': questions,
           'total_questions': len(questions),
           'current_category': None,
-          'categories': categories_formatted
+          'categories': get_formatted_categories()
       })
 
   '''
@@ -152,18 +155,12 @@ def create_app(test_config=None):
           if len(questions) == 0:
               return abort(422)
 
-          # get all categories
-          categories = Category.query.all()
-          categories_formatted = {}
-          for category in categories:
-              categories_formatted[category.id] = category.type
-
           return jsonify({
               'success': True,
               'questions': questions,
               'total_questions': len(questions),
               'current_category': None,
-              'categories': categories_formatted
+              'categories': get_formatted_categories()
           })
       else:
           '''
@@ -245,18 +242,12 @@ def create_app(test_config=None):
       if len(questions) == 0:
           return abort(422)
 
-      # Get all categories
-      categories = Category.query.all()
-      categories_formatted = {}
-      for category in categories:
-          categories_formatted[category.id] = category.type
-
       return jsonify({
           'success': True,
           'questions': questions,
           'total_questions': len(questions),
           'current_category': current_category.format(),
-          'categories': categories_formatted
+          'categories': get_formatted_categories()
       })
 
 
