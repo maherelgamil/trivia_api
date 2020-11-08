@@ -116,12 +116,39 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 422)
 
+    """
+    test search for question
+    """
     def test_get_questions_by_search_term(self):
         response = self.client().post('/questions', json={'searchTerm': 'title'})
         questions = json.loads(response.data)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(questions['questions']), questions['total_questions'])
+
+    """
+    test get questions by category
+    """
+    def test_get_questions_by_category(self):
+        response = self.client().get('/categories/1/questions')
+        questions = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(questions['questions']), questions['total_questions'])
+        self.assertEqual(questions['current_category']['id'], 1)
+
+
+    def test_get_questions_by_not_exist_category(self):
+        response = self.client().get('/categories/11111/questions')
+        questions = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
+
+    def test_get_questions_by_category_with_invalid_page_number(self):
+        response = self.client().get('/categories/1/questions?page=0')
+        questions = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 422)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
