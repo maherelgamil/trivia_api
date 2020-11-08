@@ -114,20 +114,20 @@ def create_app(test_config=None):
       except:
         return abort(500)
 
-  '''
-  Create an endpoint to POST a new question,
-  which will require the question and answer text,
-  category, and difficulty score.
-
-  TEST: When you submit a question on the "Add" tab,
-  the form will clear and the question will appear at the end of the last page
-  of the questions list in the "List" tab.
-  '''
   @app.route('/questions', methods=['POST'])
   def create_post():
 
       question_data = request.get_json()
 
+      '''
+       Create a POST endpoint to get questions based on a search term.
+       It should return any questions for whom the search term
+       is a substring of the question.
+
+       TEST: Search by any phrase. The questions list will update to include
+       only question that include that string within their question.
+       Try using the word "title" to start.
+       '''
       if question_data.get('searchTerm'):
           query = question_data.get('searchTerm')
 
@@ -166,6 +166,15 @@ def create_app(test_config=None):
               'categories': categories_formatted
           })
       else:
+          '''
+          Create an endpoint to POST a new question,
+          which will require the question and answer text,
+          category, and difficulty score.
+
+          TEST: When you submit a question on the "Add" tab,
+          the form will clear and the question will appear at the end of the last page
+          of the questions list in the "List" tab.
+          '''
           # Validation
           if 'question' not in question_data.keys() or \
               question_data.get('question') == None or \
@@ -194,16 +203,6 @@ def create_app(test_config=None):
               "message": "Question Created Successfully",
               'question': question.format()
           }), 200
-
-  '''
-  Create a POST endpoint to get questions based on a search term.
-  It should return any questions for whom the search term
-  is a substring of the question.
-
-  TEST: Search by any phrase. The questions list will update to include
-  only question that include that string within their question.
-  Try using the word "title" to start.
-  '''
 
 
   '''
