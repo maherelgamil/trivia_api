@@ -130,26 +130,26 @@ def create_app(test_config=None):
 
       # Validation
       if 'question' not in question_data.keys() or \
-          question_data['question'] == None or \
-          question_data['question'] == '' or \
+          question_data.get('question') == None or \
+          question_data.get('question') == '' or \
           'answer' not in question_data.keys() or \
-          question_data['answer'] == None or \
-          question_data['answer'] == '' or \
+          question_data.get('answer') == None or \
+          question_data.get('answer') == '' or \
           'difficulty' not in question_data.keys() or \
-          question_data['difficulty'] == None or \
-          question_data['difficulty'] == '' or \
+          question_data.get('difficulty') == None or \
+          question_data.get('difficulty') == '' or \
           'category' not in question_data.keys() or \
-          question_data['category'] == None or \
-          question_data['category'] == '':
+          question_data.get('category') == None or \
+          question_data.get('category') == '':
 
           return abort(422)
 
 
       question = Question(
-          question=question_data['question'],
-          answer=question_data['answer'],
-          difficulty=question_data['difficulty'],
-          category=question_data['category'],
+          question=question_data.get('question'),
+          answer=question_data.get('answer'),
+          difficulty=question_data.get('difficulty'),
+          category=question_data.get('category'),
       )
       question.insert()
 
@@ -168,6 +168,7 @@ def create_app(test_config=None):
   only question that include that string within their question.
   Try using the word "title" to start.
   '''
+
 
   '''
   @TODO:
